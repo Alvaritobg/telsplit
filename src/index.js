@@ -6,14 +6,6 @@ const { createBot, registerTelegramCommands } = require('./bot');
 
 async function bootstrap() {
   try {
-    await connectToDatabase(MONGO_URI);
-
-    const bot = createBot(BOT_TOKEN);
-    await registerTelegramCommands(bot);
-    await bot.launch();
-
-    console.log('Bot is running');
-
     const app = express();
     app.get('/', (req, res) => res.send('OK'));
     app.get('/health', (req, res) => res.json({ status: 'ok' }));
@@ -21,6 +13,14 @@ async function bootstrap() {
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`HTTP server listening on port ${PORT}`);
     });
+
+    await connectToDatabase(MONGO_URI);
+
+    const bot = createBot(BOT_TOKEN);
+    await registerTelegramCommands(bot);
+    await bot.launch();
+
+    console.log('Bot is running');
 
     const stop = async (signal) => {
       console.log(`Received ${signal}. Stopping bot and closing DB connection...`);
