@@ -1,0 +1,37 @@
+const { Schema, model } = require('mongoose');
+
+const expenseSchema = new Schema(
+  {
+    chatId: {
+      type: String,
+      required: true,
+      index: true,
+    },
+    payerName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 500,
+    },
+    date: {
+      type: Date,
+      default: Date.now,
+      index: true,
+    },
+  },
+  {
+    versionKey: false,
+  }
+);
+
+module.exports = model('Expense', expenseSchema);
