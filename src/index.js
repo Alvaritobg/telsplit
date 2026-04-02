@@ -1,5 +1,6 @@
+const express = require('express');
 const mongoose = require('mongoose');
-const { BOT_TOKEN, MONGO_URI } = require('./config/env');
+const { BOT_TOKEN, MONGO_URI, WEBHOOK_DOMAIN, PORT } = require('./config/env');
 const { connectToDatabase } = require('./db/mongoose');
 const { createBot, registerTelegramCommands } = require('./bot');
 
@@ -12,6 +13,14 @@ async function bootstrap() {
     await bot.launch();
 
     console.log('Bot is running');
+
+    const app = express();
+    app.get('/', (req, res) => res.send('OK'));
+    app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`HTTP server listening on port ${PORT}`);
+    });
 
     const stop = async (signal) => {
       console.log(`Received ${signal}. Stopping bot and closing DB connection...`);

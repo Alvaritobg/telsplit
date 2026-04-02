@@ -13,4 +13,6 @@ function getRequiredEnv(name) {
 module.exports = {
   BOT_TOKEN: getRequiredEnv('BOT_TOKEN'),
   MONGO_URI: getRequiredEnv('MONGO_URI'),
+  WEBHOOK_DOMAIN: process.env.WEBHOOK_DOMAIN || null,
+  PORT: process.env.PORT || 10000,
 };
