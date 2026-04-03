@@ -1,17 +1,14 @@
-// Comando para mostrar la cuenta activa del usuario
 async function cuentaActivaCommand(ctx) {
   const userId = ctx.from?.id;
   const chatId = String(ctx.chat.id);
   const Participant = require('../models/Participant');
 
-  // Buscar participante
   const participant = await Participant.findOne({ userId, chatId });
   if (!participant || !participant.activeAccountId) {
     await ctx.reply('No tienes ninguna cuenta activa seleccionada. Usa /seleccionar_cuenta para elegir una.');
     return;
   }
 
-  // Buscar cuenta activa
   const account = await Account.findById(participant.activeAccountId);
   if (!account) {
     await ctx.reply('La cuenta activa seleccionada ya no existe. Usa /seleccionar_cuenta para elegir otra.');
