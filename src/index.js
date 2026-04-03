@@ -18,7 +18,15 @@ async function bootstrap() {
 
     const bot = createBot(BOT_TOKEN);
     await registerTelegramCommands(bot);
-    await bot.launch();
+
+    try {
+      await bot.telegram.deleteWebhook();
+    } catch (e) {
+      console.warn('Could not delete webhook (continuing):', e.message || e);
+    }
+
+
+    await bot.launch({ dropPendingUpdates: true });
 
     console.log('Bot is running');
 
