@@ -1,5 +1,12 @@
+/**
+ * Modelo de participante de chat/cuenta.
+ * @module models/Participant
+ */
 const { Schema, model } = require('mongoose');
 
+/**
+ * Esquema de participante.
+ */
 const participantSchema = new Schema(
   {
     chatId: {
@@ -51,4 +58,7 @@ participantSchema.index(
   }
 );
 
+/**
+ * Modelo de participante.
+ */
 module.exports = model('Participant', participantSchema);

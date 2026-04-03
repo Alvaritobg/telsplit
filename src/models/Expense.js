@@ -1,5 +1,13 @@
 const { Schema, model } = require('mongoose');
+/**
+ * Modelo de gasto compartido.
+ * @module models/Expense
+ */
+const { Schema, model } = require('mongoose');
 
+/**
+ * Esquema de gasto.
+ */
 const expenseSchema = new Schema({
   chatId: { type: String, index: true },
   accountId: { type: Schema.Types.ObjectId, ref: 'Account', index: true }, // nullable for legacy/test
@@ -11,4 +19,7 @@ const expenseSchema = new Schema({
   versionKey: false,
 });
 
+/**
+ * Modelo de gasto compartido.
+ */
 module.exports = model('Expense', expenseSchema);

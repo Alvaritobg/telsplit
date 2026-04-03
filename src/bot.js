@@ -56,7 +56,11 @@ function createBot(token) {
   bot.command('listar_cuentas', listarCuentasCommand);
   bot.command('cuenta_activa', cuentaActivaCommand);
 
-  // Registrar handler de callback_query aquí
+  /**
+   * Crea y configura el bot de Telegram.
+   * @param {string} token - Token del bot de Telegram
+   * @returns {import('telegraf').Telegraf}
+   */
   bot.on('callback_query', async (ctx, next) => {
     if (ctx.callbackQuery && ctx.callbackQuery.data && ctx.callbackQuery.data.startsWith('select_account_')) {
       await seleccionarCuentaCallback(ctx);
@@ -72,6 +76,10 @@ function createBot(token) {
   return bot;
 }
 
+/**
+ * Registra los comandos de Telegram para el menú de comandos.
+ * @param {import('telegraf').Telegraf} bot
+ */
 async function registerTelegramCommands(bot) {
   await bot.telegram.setMyCommands([
     { command: 'gasto', description: 'Registrar un gasto compartido' },

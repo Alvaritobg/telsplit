@@ -1,3 +1,7 @@
+/**
+ * Muestra la cuenta activa del usuario en el chat actual.
+ * @param {import('telegraf').Context} ctx
+ */
 async function cuentaActivaCommand(ctx) {
   const userId = ctx.from?.id;
   const chatId = String(ctx.chat.id);
@@ -36,6 +40,10 @@ function isRateLimited(userId, command) {
   return true;
 }
 
+/**
+ * Crea una nueva cuenta/grupo y añade al usuario como owner.
+ * @param {import('telegraf').Context} ctx
+ */
 async function cuentaCrearCommand(ctx) {
   const userId = ctx.from?.id;
   if (!userId) return ctx.reply('No se pudo identificar tu usuario.');
@@ -63,6 +71,11 @@ async function cuentaCrearCommand(ctx) {
   await ctx.reply(`Cuenta creada: ${name}\nID: ${account._id}\nUsa /cuenta_invitar ${account._id} para invitar a otros.`);
 }
 
+/**
+ * Genera un enlace/token de invitación para una cuenta existente.
+ * Solo el owner puede invitar.
+ * @param {import('telegraf').Context} ctx
+ */
 async function cuentaInvitarCommand(ctx) {
   const userId = ctx.from?.id;
   if (!userId) return ctx.reply('No se pudo identificar tu usuario.');
@@ -81,6 +94,10 @@ async function cuentaInvitarCommand(ctx) {
   await ctx.reply(msg);
 }
 
+/**
+ * Permite a un usuario unirse a una cuenta usando un token (y clave opcional).
+ * @param {import('telegraf').Context} ctx
+ */
 async function cuentaUnirCommand(ctx) {
   const userId = ctx.from?.id;
   if (!userId) return ctx.reply('No se pudo identificar tu usuario.');
@@ -102,6 +119,11 @@ async function cuentaUnirCommand(ctx) {
   await ctx.reply(`Te has unido a la cuenta: ${account.name}`);
 }
 
+/**
+ * Permite seleccionar la cuenta activa del usuario, mostrando menú si no se pasa argumento.
+ * Guarda la selección en la base de datos.
+ * @param {import('telegraf').Context} ctx
+ */
 async function seleccionarCuentaCommand(ctx) {
   const userId = ctx.from?.id;
   if (!userId) return ctx.reply('No se pudo identificar tu usuario.');
@@ -150,6 +172,11 @@ async function seleccionarCuentaCommand(ctx) {
   await ctx.reply(`Cuenta activa: ${account.name}`);
 }
 // Handler para callback de selección de cuenta
+/**
+ * Handler para el callback de selección de cuenta desde el menú inline.
+ * Guarda la selección en la base de datos.
+ * @param {import('telegraf').Context} ctx
+ */
 async function seleccionarCuentaCallback(ctx) {
   const userId = ctx.from?.id;
   if (!userId) return ctx.answerCbQuery('No se pudo identificar tu usuario.');
@@ -180,6 +207,10 @@ async function seleccionarCuentaCallback(ctx) {
   await ctx.answerCbQuery('Cuenta seleccionada');
 }
 
+/**
+ * Lista todas las cuentas a las que pertenece el usuario.
+ * @param {import('telegraf').Context} ctx
+ */
 async function misCuentasCommand(ctx) {
   const userId = ctx.from?.id;
   if (!userId) return ctx.reply('No se pudo identificar tu usuario.');
@@ -193,6 +224,10 @@ async function misCuentasCommand(ctx) {
 }
 
 
+/**
+ * Lista todas las cuentas del sistema (solo admin).
+ * @param {import('telegraf').Context} ctx
+ */
 async function listarCuentasCommand(ctx) {
   const userId = ctx.from?.id;
   const ADMIN_ID = process.env.ADMIN_ID ? Number(process.env.ADMIN_ID) : null;
