@@ -58,7 +58,4 @@ participantSchema.index(
   }
 );
 
-/**
- * Modelo de participante.
- */
 module.exports = model('Participant', participantSchema);
