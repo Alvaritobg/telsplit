@@ -9,6 +9,7 @@ const {
   seleccionarCuentaCommand,
   misCuentasCommand,
   listarCuentasCommand,
+  cuentaActivaCommand,
 } = require('./commands/account');
 const { registerInteraction } = require('./services/participants');
 
@@ -52,6 +53,7 @@ function createBot(token) {
   bot.command('seleccionar_cuenta', seleccionarCuentaCommand);
   bot.command('mis_cuentas', misCuentasCommand);
   bot.command('listar_cuentas', listarCuentasCommand);
+  bot.command('cuenta_activa', cuentaActivaCommand);
 
   bot.catch((error, ctx) => {
     console.error(`Unhandled bot error for update ${ctx.update.update_id}:`, error);
@@ -70,6 +72,7 @@ async function registerTelegramCommands(bot) {
     { command: 'unir_cuenta', description: 'Unirse a una cuenta con token' },
     { command: 'seleccionar_cuenta', description: 'Seleccionar cuenta activa' },
     { command: 'mis_cuentas', description: 'Ver tus cuentas' },
+    { command: 'cuenta_activa', description: 'Ver tu cuenta activa actual' },
     { command: 'listar_cuentas', description: 'Listar cuentas (admin)' },
   ]);
 }
