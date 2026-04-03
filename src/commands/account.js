@@ -130,9 +130,23 @@ async function seleccionarCuentaCommand(ctx) {
   const account = await Account.findById(accountId);
   if (!account) return ctx.reply('Cuenta no encontrada.');
   if (!account.members.some(m => m.userId === userId)) return ctx.reply('No eres miembro de esta cuenta.');
-  // Guardar en session o base de datos real (aquí solo ejemplo en memoria)
-  ctx.session = ctx.session || {};
-  ctx.session.activeAccountId = accountId;
+
+  // Guardar la cuenta activa en Participant
+  const Participant = require('../models/Participant');
+  const chatId = String(ctx.chat.id);
+  let participant = await Participant.findOne({ userId, chatId });
+  if (!participant) {
+    participant = new Participant({
+      userId,
+      chatId,
+      displayName: ctx.from.first_name || 'Usuario',
+      interacted: true,
+      lastSeenAt: new Date(),
+    });
+  }
+  participant.activeAccountId = accountId;
+  await participant.save();
+
   await ctx.reply(`Cuenta activa: ${account.name}`);
 }
 // Handler para callback de selección de cuenta
@@ -146,9 +160,22 @@ async function seleccionarCuentaCallback(ctx) {
   const account = await Account.findById(accountId);
   if (!account) return ctx.answerCbQuery('Cuenta no encontrada.');
   if (!account.members.some(m => m.userId === userId)) return ctx.answerCbQuery('No eres miembro de esta cuenta.');
-  // Guardar en session o base de datos real (aquí solo ejemplo en memoria)
-  ctx.session = ctx.session || {};
-  ctx.session.activeAccountId = accountId;
+  // Guardar la cuenta activa en Participant
+  const Participant = require('../models/Participant');
+  const chatId = String(ctx.chat.id);
+  let participant = await Participant.findOne({ userId, chatId });
+  if (!participant) {
+    participant = new Participant({
+      userId,
+      chatId,
+      displayName: ctx.from.first_name || 'Usuario',
+      interacted: true,
+      lastSeenAt: new Date(),
+    });
+  }
+  participant.activeAccountId = accountId;
+  await participant.save();
+
   await ctx.editMessageText(`Cuenta activa: ${account.name}`);
   await ctx.answerCbQuery('Cuenta seleccionada');
 }
