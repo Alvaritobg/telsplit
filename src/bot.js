@@ -7,6 +7,7 @@ const {
   invitarCuentaCommand,
   unirCuentaCommand,
   seleccionarCuentaCommand,
+  seleccionarCuentaCallback,
   misCuentasCommand,
   listarCuentasCommand,
   cuentaActivaCommand,
@@ -54,6 +55,15 @@ function createBot(token) {
   bot.command('mis_cuentas', misCuentasCommand);
   bot.command('listar_cuentas', listarCuentasCommand);
   bot.command('cuenta_activa', cuentaActivaCommand);
+
+  // Registrar handler de callback_query aquí
+  bot.on('callback_query', async (ctx, next) => {
+    if (ctx.callbackQuery && ctx.callbackQuery.data && ctx.callbackQuery.data.startsWith('select_account_')) {
+      await seleccionarCuentaCallback(ctx);
+    } else {
+      return next && next();
+    }
+  });
 
   bot.catch((error, ctx) => {
     console.error(`Unhandled bot error for update ${ctx.update.update_id}:`, error);

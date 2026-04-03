@@ -106,8 +106,27 @@ async function seleccionarCuentaCommand(ctx) {
   const userId = ctx.from?.id;
   if (!userId) return ctx.reply('No se pudo identificar tu usuario.');
   const args = ctx.message.text.split(' ').slice(1);
-  const accountId = args[0];
-  if (!accountId) return ctx.reply('Debes indicar el ID de la cuenta.');
+  let accountId = args[0];
+
+  // Si no se pasa argumento, mostrar menú de cuentas
+  if (!accountId) {
+    const accounts = await Account.find({ 'members.userId': userId });
+    if (!accounts.length) return ctx.reply('No tienes cuentas para seleccionar.');
+    // Mostrar menú con botones
+    return ctx.reply(
+      'Selecciona una cuenta:',
+      {
+        reply_markup: {
+          inline_keyboard: accounts.map(acc => [{
+            text: acc.name,
+            callback_data: `select_account_${acc._id}`
+          }])
+        }
+      }
+    );
+  }
+
+  // Selección directa por ID
   const account = await Account.findById(accountId);
   if (!account) return ctx.reply('Cuenta no encontrada.');
   if (!account.members.some(m => m.userId === userId)) return ctx.reply('No eres miembro de esta cuenta.');
@@ -115,6 +134,23 @@ async function seleccionarCuentaCommand(ctx) {
   ctx.session = ctx.session || {};
   ctx.session.activeAccountId = accountId;
   await ctx.reply(`Cuenta activa: ${account.name}`);
+}
+// Handler para callback de selección de cuenta
+async function seleccionarCuentaCallback(ctx) {
+  const userId = ctx.from?.id;
+  if (!userId) return ctx.answerCbQuery('No se pudo identificar tu usuario.');
+  const data = ctx.callbackQuery.data;
+  const match = data.match(/^select_account_(.+)$/);
+  if (!match) return ctx.answerCbQuery('Selección inválida.');
+  const accountId = match[1];
+  const account = await Account.findById(accountId);
+  if (!account) return ctx.answerCbQuery('Cuenta no encontrada.');
+  if (!account.members.some(m => m.userId === userId)) return ctx.answerCbQuery('No eres miembro de esta cuenta.');
+  // Guardar en session o base de datos real (aquí solo ejemplo en memoria)
+  ctx.session = ctx.session || {};
+  ctx.session.activeAccountId = accountId;
+  await ctx.editMessageText(`Cuenta activa: ${account.name}`);
+  await ctx.answerCbQuery('Cuenta seleccionada');
 }
 
 async function misCuentasCommand(ctx) {
@@ -147,6 +183,7 @@ module.exports = {
   invitarCuentaCommand: cuentaInvitarCommand,
   unirCuentaCommand: cuentaUnirCommand,
   seleccionarCuentaCommand,
+  seleccionarCuentaCallback,
   misCuentasCommand,
   listarCuentasCommand,
   cuentaActivaCommand,
