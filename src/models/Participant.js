@@ -36,6 +36,11 @@ const participantSchema = new Schema(
       type: Date,
       default: Date.now,
     },
+    activeAccountId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Account',
+      default: null,
+    },
   },
   {
     versionKey: false,
