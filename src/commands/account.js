@@ -83,7 +83,6 @@ async function cuentaInvitarCommand(ctx) {
   const args = ctx.message.text.split(' ').slice(1);
   const accountId = args[0];
 
-  // Si no se pasa argumento, mostrar menú de cuentas donde es owner
   if (!accountId) {
     const accounts = await Account.find({ ownerUserId: userId });
     if (!accounts.length) return ctx.reply('No tienes cuentas donde seas propietario para invitar.');
@@ -258,7 +257,6 @@ async function listarCuentasCommand(ctx) {
   await ctx.reply(msg);
 }
 
-// Callback para generar enlace de invitación desde el menú inline
 async function invitarCuentaCallback(ctx) {
   const userId = ctx.from?.id;
   if (!userId) return ctx.answerCbQuery('No se pudo identificar tu usuario.');
