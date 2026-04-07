@@ -5,6 +5,7 @@ const { limpiarCommand } = require('./commands/limpiar');
 const {
   nuevaCuentaCommand,
   invitarCuentaCommand,
+  invitarCuentaCallback,
   unirCuentaCommand,
   seleccionarCuentaCommand,
   seleccionarCuentaCallback,
@@ -50,7 +51,6 @@ function createBot(token) {
   bot.command('limpiar', limpiarCommand);
   bot.command('nueva_cuenta', nuevaCuentaCommand);
   bot.command('invitar_cuenta', invitarCuentaCommand);
-  
   bot.command('unir_cuenta', unirCuentaCommand);
   bot.command('seleccionar_cuenta', seleccionarCuentaCommand);
   bot.command('mis_cuentas', misCuentasCommand);
