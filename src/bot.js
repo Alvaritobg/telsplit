@@ -50,6 +50,7 @@ function createBot(token) {
   bot.command('limpiar', limpiarCommand);
   bot.command('nueva_cuenta', nuevaCuentaCommand);
   bot.command('invitar_cuenta', invitarCuentaCommand);
+  
   bot.command('unir_cuenta', unirCuentaCommand);
   bot.command('seleccionar_cuenta', seleccionarCuentaCommand);
   bot.command('mis_cuentas', misCuentasCommand);
@@ -67,6 +68,13 @@ function createBot(token) {
     } else {
       return next && next();
     }
+  });
+
+  bot.on('callback_query', async (ctx, next) => {
+    if (ctx.callbackQuery.data.startsWith('invitar_cuenta_')) {
+      return invitarCuentaCallback(ctx);
+    }
+    return next();
   });
 
   bot.catch((error, ctx) => {

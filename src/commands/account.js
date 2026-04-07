@@ -82,7 +82,25 @@ async function cuentaInvitarCommand(ctx) {
   if (isRateLimited(userId, 'cuenta_invitar')) return ctx.reply('Espera antes de generar otro enlace.');
   const args = ctx.message.text.split(' ').slice(1);
   const accountId = args[0];
-  if (!accountId) return ctx.reply('Debes indicar el ID de la cuenta.');
+
+  // Si no se pasa argumento, mostrar menú de cuentas donde es owner
+  if (!accountId) {
+    const accounts = await Account.find({ ownerUserId: userId });
+    if (!accounts.length) return ctx.reply('No tienes cuentas donde seas propietario para invitar.');
+    return ctx.reply(
+      'Selecciona la cuenta para generar el enlace de invitación:',
+      {
+        reply_markup: {
+          inline_keyboard: accounts.map(acc => [{
+            text: acc.name,
+            callback_data: `invitar_cuenta_${acc._id}`
+          }])
+        }
+      }
+    );
+  }
+
+  // Flujo clásico: se pasa el ID
   const account = await Account.findById(accountId);
   if (!account) return ctx.reply('Cuenta no encontrada.');
   if (account.ownerUserId !== userId) return ctx.reply('Solo el propietario puede invitar.');
@@ -240,9 +258,30 @@ async function listarCuentasCommand(ctx) {
   await ctx.reply(msg);
 }
 
+// Callback para generar enlace de invitación desde el menú inline
+async function invitarCuentaCallback(ctx) {
+  const userId = ctx.from?.id;
+  if (!userId) return ctx.answerCbQuery('No se pudo identificar tu usuario.');
+  const data = ctx.callbackQuery.data;
+  const match = data.match(/^invitar_cuenta_(.+)$/);
+  if (!match) return ctx.answerCbQuery('Selección inválida.');
+  const accountId = match[1];
+  const account = await Account.findById(accountId);
+  if (!account) return ctx.reply('Cuenta no encontrada.');
+  if (account.ownerUserId !== userId) return ctx.reply('Solo el propietario puede invitar.');
+  // Regenera token
+  account.inviteToken = crypto.randomBytes(16).toString('hex');
+  await account.save();
+  let msg = `Enlace de invitación:\nhttps://t.me/${ctx.botInfo.username}?start=join-${account.inviteToken}`;
+  if (account.inviteCodeHash) msg += '\nEsta cuenta requiere clave.';
+  await ctx.reply(msg);
+  await ctx.answerCbQuery('Enlace generado.');
+}
+
 module.exports = {
   nuevaCuentaCommand: cuentaCrearCommand,
   invitarCuentaCommand: cuentaInvitarCommand,
+  invitarCuentaCallback,
   unirCuentaCommand: cuentaUnirCommand,
   seleccionarCuentaCommand,
   seleccionarCuentaCallback,
